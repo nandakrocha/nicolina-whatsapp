@@ -1,0 +1,192 @@
+/**
+ * 🤖 CORREÇÕES ESPECÍFICAS PARA ANDROID
+ *
+ * Objetivo: Resolver problemas de touch events, inputs e interações
+ * em dispositivos Android sem afetar iOS ou Desktop
+ */
+
+/* Melhorar área de toque em botões para Android */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Prevenir zoom indesejado em inputs (Android) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Melhorar performance de scroll em Android */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevenir delay de 300ms em cliques (Android WebView) */
+button,
+a,
+[role="button"],
+input[type="submit"] {
+  touch-action: manipulation;
+}
+
+/* Garantir que inputs de data funcionem corretamente em Android */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-height: 44px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Melhorar campos numéricos em Android */
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Garantir que popover/select funcionem em Android */
+[role="dialog"],
+[role="menu"],
+[role="listbox"],
+[role="combobox"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: manipulation;
+}
+
+/* 🤖 CORREÇÃO ANDROID: Radix UI Popover/Select/Combobox */
+[data-radix-popper-content-wrapper],
+[data-radix-select-viewport],
+[data-radix-popover-content],
+[data-radix-select-content] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* 🤖 CORREÇÃO ANDROID: Garantir que triggers sejam clicáveis */
+[data-radix-select-trigger],
+[data-radix-popover-trigger],
+[data-slot="select-trigger"],
+[data-slot="popover-trigger"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* 🤖 CORREÇÃO ANDROID: Garantir que itens sejam clicáveis */
+[data-radix-select-item],
+[data-slot="select-item"],
+[data-radix-combobox-item],
+[cmdk-item] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* 🤖 CORREÇÃO ANDROID: Garantir visibilidade dos portals */
+[data-radix-portal] {
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+/* Prevenir problemas com teclado virtual em Android */
+body {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  height: 100vh;
+}
+
+#root {
+  overflow-y: auto;
+  height: 100vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Garantir que checkboxes sejam clicáveis em Android */
+input[type="checkbox"] {
+  min-width: 20px;
+  min-height: 20px;
+  touch-action: manipulation;
+}
+
+/* Melhorar área de toque em labels com checkbox */
+label {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevenir seleção de texto acidental durante gestos de toque */
+@media (pointer: coarse) {
+  .no-select-on-touch {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Garantir que motion/animations funcionem em Android */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* Corrigir problema de foco em inputs após fechar teclado (Android) */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Garantir visibilidade de placeholders em Android */
+::placeholder {
+  opacity: 0.6;
+  color: inherit;
+}
+
+/* Melhorar performance de animações em Android */
+.motion-div,
+[data-motion] {
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

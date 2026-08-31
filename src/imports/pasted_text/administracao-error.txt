@@ -1,0 +1,158 @@
+ 📡 Atualização recebida do Firebase (Produtos)
+ 📡 Atualização recebida do Firebase (Clientes)
+ 🏗️ Layout carregado - Menu com Inicializar ativo
+app-wztcdbhmit5667ov…ministracao.tsx:433 Uncaught ReferenceError: setProdutoSelecionado is not defined
+    at Administracao (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:433:36)
+    at ms (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:68027)
+    at _S (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:114634)
+    at _4 (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:127720)
+    at HTMLUnknownElement.y (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:54006)
+    at Object.ik (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:54331)
+    at iz (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:55284)
+    at ep (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:166948)
+    at SX (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160942)
+    at SK (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160868)Understand this error
+ Error handled by React Router default ErrorBoundary: ReferenceError: setProdutoSelecionado is not defined
+    at Administracao (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:433:36)
+    at ms (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:68027)
+    at _S (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:114634)
+    at _4 (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:127720)
+    at ep (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:166810)
+    at SX (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160942)
+    at SK (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160868)
+    at SY (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160735)
+    at SS (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:156365)
+    at V (code_components_preview_iframe-c57f661b337ed852.min.js.br:61:1842) Component Stack
+    at DefaultErrorComponent (react-router.js:6187:15)
+    at RenderErrorBoundary (react-router.js:6206:5)
+    at DataRoutes (react-router.js:6994:3)
+    at Router (react-router.js:7086:13)
+    at RouterProvider (react-router.js:6760:3)
+    at V (next-themes.js:39:25)
+    at J (next-themes.js:37:18)
+    at code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at App (App.tsx:18:23)
+    at o0 (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:4420)
+    at O (code_components_preview_iframe-c57f661b337ed852.min.js.br:572:13259)
+    at n3 (code_components_preview_iframe-c57f661b337ed852.min.js.br:626:13925)
+    at vy (code_components_preview_iframe-c57f661b337ed852.min.js.br:643:10316)
+    at 3853c8b7-a46c-4d92-8011-075c572ffc9b-v2-figmaiframepreview.figma.site/div
+    at an (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:14190)
+    at yp (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:248206)
+    at yK (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:259344)
+    at ib (code_components_preview_iframe-c57f661b337ed852.min.js.br:102:146248)
+    at hu (code_components_preview_iframe-c57f661b337ed852.min.js.br:436:8433)
+r @ code_components_prev…7ed852.min.js.br:17Understand this error
+ 🏗️ Layout carregado - Menu com Inicializar ativo
+app-wztcdbhmit5667ov…ministracao.tsx:433 Uncaught ReferenceError: setProdutoSelecionado is not defined
+    at Administracao (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:433:36)
+    at ms (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:68027)
+    at _S (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:114634)
+    at _4 (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:127720)
+    at HTMLUnknownElement.y (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:54006)
+    at Object.ik (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:54331)
+    at iz (code_components_preview_iframe-c57f661b337ed852.min.js.br:25:55284)
+    at ep (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:166948)
+    at SX (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160942)
+    at S$ (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160557)Understand this error
+ Error handled by React Router default ErrorBoundary: ReferenceError: setProdutoSelecionado is not defined
+    at Administracao (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:433:36)
+    at ms (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:68027)
+    at _S (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:114634)
+    at _4 (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:127720)
+    at ep (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:166810)
+    at SX (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160942)
+    at S$ (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160557)
+    at Sz (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160323)
+    at SI (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:156868)
+    at SS (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:156422) Component Stack
+    at DefaultErrorComponent (react-router.js:6187:15)
+    at RenderErrorBoundary (react-router.js:6206:5)
+    at DataRoutes (react-router.js:6994:3)
+    at Router (react-router.js:7086:13)
+    at RouterProvider (react-router.js:6760:3)
+    at V (next-themes.js:39:25)
+    at J (next-themes.js:37:18)
+    at code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at App (App.tsx:18:23)
+    at o0 (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:4420)
+    at O (code_components_preview_iframe-c57f661b337ed852.min.js.br:572:13259)
+    at n3 (code_components_preview_iframe-c57f661b337ed852.min.js.br:626:13925)
+    at vy (code_components_preview_iframe-c57f661b337ed852.min.js.br:643:10316)
+    at 3853c8b7-a46c-4d92-8011-075c572ffc9b-v2-figmaiframepreview.figma.site/div
+    at an (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:14190)
+    at yp (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:248206)
+    at yK (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:259344)
+    at ib (code_components_preview_iframe-c57f661b337ed852.min.js.br:102:146248)
+    at hu (code_components_preview_iframe-c57f661b337ed852.min.js.br:436:8433)
+r @ code_components_prev…7ed852.min.js.br:17Understand this error
+ The above error occurred in the <Administracao> component:
+
+    at Administracao (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:47:35)
+    at RenderedRoute (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:6296:26)
+    at Outlet (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:7077:26)
+    at div
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at main
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at div
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at Layout (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/components/Layout.tsx?t=1774695681122:29:20)
+    at RenderedRoute (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:6296:26)
+    at RenderErrorBoundary (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:6206:5)
+    at DataRoutes (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:6994:3)
+    at Router (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:7086:13)
+    at RouterProvider (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/react-router.js?v=343c12fe:6760:3)
+    at V (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/next-themes.js?v=427b824a:39:25)
+    at J (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/node_modules/.vite/deps/next-themes.js?v=427b824a:37:18)
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at App (https://app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/App.tsx?t=1774695681122:33:23)
+    at o0 (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:117:4420)
+    at O (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:572:13259)
+    at n3 (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:626:13925)
+    at vy (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:643:10316)
+    at div
+    at an (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:117:14190)
+    at yp (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:633:248206)
+    at yK (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:633:259344)
+    at ib (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:102:146248)
+    at hu (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-c57f661b337ed852.min.js.br:436:8433)
+
+React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary.
+r @ code_components_prev…7ed852.min.js.br:17Understand this error
+ React Router caught the following error during render ReferenceError: setProdutoSelecionado is not defined
+    at Administracao (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/src/app/pages/Administracao.tsx:433:36)
+    at ms (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:68027)
+    at _S (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:114634)
+    at _4 (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:127720)
+    at ep (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:166810)
+    at SX (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160942)
+    at S$ (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160557)
+    at Sz (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:160323)
+    at SI (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:156868)
+    at SS (code_components_preview_iframe-c57f661b337ed852.min.js.br:37:156422) Component Stack
+    at RenderErrorBoundary (react-router.js:6206:5)
+    at DataRoutes (react-router.js:6994:3)
+    at Router (react-router.js:7086:13)
+    at RouterProvider (react-router.js:6760:3)
+    at V (next-themes.js:39:25)
+    at J (next-themes.js:37:18)
+    at code_components_preview_iframe-c57f661b337ed852.min.js.br:290:12522
+    at FGCmp (app-wztcdbhmit5667ovr5ljvuqafwpdz2j2qjm3xkzc3hsx32mmrapa.makeproxy-c.figma.site/@id/fginspector:3:55)
+    at App (App.tsx:18:23)
+    at o0 (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:4420)
+    at O (code_components_preview_iframe-c57f661b337ed852.min.js.br:572:13259)
+    at n3 (code_components_preview_iframe-c57f661b337ed852.min.js.br:626:13925)
+    at vy (code_components_preview_iframe-c57f661b337ed852.min.js.br:643:10316)
+    at 3853c8b7-a46c-4d92-8011-075c572ffc9b-v2-figmaiframepreview.figma.site/div
+    at an (code_components_preview_iframe-c57f661b337ed852.min.js.br:117:14190)
+    at yp (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:248206)
+    at yK (code_components_preview_iframe-c57f661b337ed852.min.js.br:633:259344)
+    at ib (code_components_preview_iframe-c57f661b337ed852.min.js.br:102:146248)
+    at hu (code_components_preview_iframe-c57f661b337ed852.min.js.br:436:8433)

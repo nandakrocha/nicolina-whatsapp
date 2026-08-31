@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicolina - Limpeza de Cache</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #084d6e 0%, #0a6b94 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #084d6e;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .version {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #666;
+        }
+
+        .status-value {
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .status-value.ok {
+            color: #22c55e;
+        }
+
+        .status-value.error {
+            color: #ef4444;
+        }
+
+        button {
+            background: #084d6e;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            background: #0a6b94;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8,77,110,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .log {
+            background: #1e1e1e;
+            color: #22c55e;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .log.visible {
+            display: block;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+        }
+
+        .icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+            color: #166534;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.visible {
+            display: block;
+        }
+
+        .countdown {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🍞</div>
+        <h1>Nicolina - Limpeza de Cache</h1>
+        <div class="version">Sistema v2.5.0</div>
+
+        <div class="status" id="status">
+            <div class="status-item">
+                <span class="status-label">Versão esperada:</span>
+                <span class="status-value" id="versaoEsperada">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Versão armazenada:</span>
+                <span class="status-value" id="versaoArmazenada">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Status:</span>
+                <span class="status-value" id="statusGeral">-</span>
+            </div>
+        </div>
+
+        <button onclick="limparCache()">
+            🧹 Limpar Cache Completo
+        </button>
+
+        <button onclick="verificarStatus()" class="btn-secondary">
+            🔍 Verificar Status
+        </button>
+
+        <button onclick="voltarSistema()" class="btn-secondary">
+            ← Voltar ao Sistema
+        </button>
+
+        <div id="log" class="log"></div>
+
+        <div id="successMessage" class="success-message">
+            <div>✅ Cache limpo com sucesso!</div>
+            <div>Redirecionando em <span class="countdown" id="countdown">3</span> segundos...</div>
+        </div>
+    </div>
+
+    <script>
+        const VERSAO_ESPERADA = '2.5.0';
+
+        function adicionarLog(mensagem) {
+            const logDiv = document.getElementById('log');
+            const linha = document.createElement('div');
+            linha.className = 'log-line';
+            linha.textContent = `[${new Date().toLocaleTimeString()}] ${mensagem}`;
+            logDiv.appendChild(linha);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            logDiv.classList.add('visible');
+        }
+
+        function verificarStatus() {
+            const versaoArmazenada = localStorage.getItem('nicolina_versao_atual') || 'NENHUMA';
+            
+            document.getElementById('versaoEsperada').textContent = VERSAO_ESPERADA;
+            document.getElementById('versaoArmazenada').textContent = versaoArmazenada;
+            
+            const statusEl = document.getElementById('statusGeral');
+            if (versaoArmazenada === VERSAO_ESPERADA) {
+                statusEl.textContent = '✅ Sincronizado';
+                statusEl.className = 'status-value ok';
+            } else {
+                statusEl.textContent = '⚠️ Desatualizado';
+                statusEl.className = 'status-value error';
+            }
+
+            adicionarLog('Verificação de status concluída');
+            adicionarLog(`Versão armazenada: ${versaoArmazenada}`);
+            adicionarLog(`Versão esperada: ${VERSAO_ESPERADA}`);
+        }
+
+        function limparCache() {
+            adicionarLog('Iniciando limpeza de cache...');
+            
+            // Limpar localStorage
+            adicionarLog('Limpando localStorage...');
+            localStorage.clear();
+            
+            // Limpar sessionStorage
+            adicionarLog('Limpando sessionStorage...');
+            sessionStorage.clear();
+            
+            // Tentar limpar Service Workers
+            if ('serviceWorker' in navigator) {
+                adicionarLog('Removendo Service Workers...');
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        registration.unregister();
+                        adicionarLog(`Service Worker removido: ${registration.scope}`);
+                    });
+                });
+            }
+            
+            // Tentar limpar Cache Storage
+            if ('caches' in window) {
+                adicionarLog('Limpando Cache Storage...');
+                caches.keys().then(keys => {
+                    keys.forEach(key => {
+                        caches.delete(key);
+                        adicionarLog(`Cache deletado: ${key}`);
+                    });
+                });
+            }
+            
+            // Definir versão correta
+            localStorage.setItem('nicolina_versao_atual', VERSAO_ESPERADA);
+            adicionarLog(`Versão ${VERSAO_ESPERADA} definida no localStorage`);
+            
+            adicionarLog('✅ Limpeza concluída!');
+            
+            // Mostrar mensagem de sucesso
+            const successDiv = document.getElementById('successMessage');
+            successDiv.classList.add('visible');
+            
+            // Contagem regressiva
+            let segundos = 3;
+            const countdownEl = document.getElementById('countdown');
+            
+            const interval = setInterval(() => {
+                segundos--;
+                countdownEl.textContent = segundos;
+                
+                if (segundos <= 0) {
+                    clearInterval(interval);
+                    window.location.href = '/';
+                }
+            }, 1000);
+        }
+
+        function voltarSistema() {
+            window.location.href = '/';
+        }
+
+        // Verificar status ao carregar
+        window.onload = verificarStatus;
+    </script>
+</body>
+</html>

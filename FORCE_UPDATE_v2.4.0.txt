@@ -1,0 +1,92 @@
+=============================================================
+🔥 INSTRUÇÃO DE FORÇA DE ATUALIZAÇÃO - v2.4.0
+=============================================================
+
+O SISTEMA FOI ATUALIZADO COMPLETAMENTE, MAS SEU NAVEGADOR PODE ESTAR COM CACHE.
+
+EXECUTE ESTES PASSOS NA ORDEM:
+
+1️⃣ PASSO 1: FECHAR TODOS OS ARQUIVOS
+   - Feche TODAS as tabs/abas do navegador com o sistema aberto
+   - Certifique-se de fechar completamente (não minimize)
+
+2️⃣ PASSO 2: ABRIR CONSOLE E COLAR ESTE CÓDIGO:
+   - Pressione F12
+   - Vá na aba "Console"
+   - Cole este código e pressione ENTER:
+
+```javascript
+// Limpar todos os caches
+localStorage.clear();
+sessionStorage.clear();
+console.log("✅ Cache limpo com sucesso!");
+console.log("🔄 Recarregando...");
+setTimeout(() => location.reload(true), 1000);
+```
+
+3️⃣ PASSO 3: AGUARDAR RELOAD
+   - O sistema vai recarregar automaticamente
+   - DEVE aparecer no console vermelho:
+     "🔥 EncomendasTabela.tsx v2.4.0 CARREGADO"
+
+4️⃣ PASSO 4: VERIFICAR SE FUNCIONOU:
+   Abra o Console (F12) e procure por:
+   
+   ✅ DEVE APARECER:
+   🔥 EncomendasTabela.tsx v2.4.0 CARREGADO - [HORA]
+   📋 VERSÃO DO COMPONENTE: 2.4.0
+   📅 TIMESTAMP: [NÚMERO]
+
+   ❌ SE NÃO APARECER:
+   O navegador ainda está com cache antigo
+
+5️⃣ SE AINDA NÃO FUNCIONAR:
+
+   MÉTODO ALTERNATIVO (Chrome/Edge):
+   1. Pressione Ctrl + Shift + Delete
+   2. Marque "Imagens e arquivos em cache"
+   3. Marque "Cookies e outros dados do site"
+   4. Clique em "Limpar dados"
+   5. Feche o navegador COMPLETAMENTE
+   6. Abra novamente
+
+=============================================================
+O QUE MUDOU NA VERSÃO 2.4.0:
+=============================================================
+
+✅ Banner verde removido (como solicitado)
+✅ Log vermelho GIGANTE no console
+✅ Sistema de configurações completo
+✅ Formulário de encomendas com 4 campos:
+   - Produto (dropdown)
+   - Quantidade (número)
+   - Observação (texto)
+   - Botão Adicionar
+
+=============================================================
+VERIFICAÇÃO FINAL:
+=============================================================
+
+Após seguir os passos acima, ao acessar /encomendas você DEVE ver:
+
+1. Formulário com 4 colunas (Produto | Quantidade | Observação | Botão)
+2. Console com log vermelho gigante
+3. Botão "⚙️ Configurações" ao lado de Cards/Lista
+
+SE NÃO VER ISSO = Cache do navegador não foi limpo corretamente
+
+=============================================================
+ÚLTIMA OPÇÃO: NAVEGADOR PRIVADO
+=============================================================
+
+1. Abra janela anônima/privada (Ctrl+Shift+N)
+2. Acesse o sistema
+3. Vá em /encomendas
+4. Veja se aparece corretamente
+5. Se sim = Problema é cache do navegador normal
+
+=============================================================
+
+Data: 09/03/2026
+Versão: 2.4.0
+Status: ✅ Código atualizado, aguardando limpeza de cache do navegador

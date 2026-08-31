@@ -1,0 +1,21 @@
+TIMESTAMP: 2025-03-03T${new Date().toISOString()}
+
+🔄 FORÇANDO ATUALIZAÇÃO DO BUILD
+
+Alterações implementadas:
+✅ Menu lateral com "🚀 Inicializar Dados"
+✅ Logo alterado para "Nicolina v2 - Sistema Atualizado"
+✅ DataInitializer removido do App.tsx
+✅ EncomendasTabela com modo lista padrão
+✅ Horário padrão 06:00
+
+Sinais visuais de atualização:
+- Menu deve mostrar "Nicolina v2" no topo
+- Menu deve ter item "🚀 Inicializar Dados" no final
+- Console deve mostrar logs de debug
+
+Se não visualizar as mudanças:
+1. Pressione Ctrl+Shift+R (hard refresh)
+2. Limpe o cache do navegador
+3. Abra em aba anônima
+4. Verifique console (F12)
