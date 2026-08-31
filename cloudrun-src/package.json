@@ -1,0 +1,14 @@
+{
+  "name": "whatsapp-webhook",
+  "description": "Webhook do WhatsApp que interpreta as mensagens e cria as encomendas.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test/",
+    "start": "functions-framework --target=whatsappWebhook"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "firebase-admin": "^13.0.0"
+  }
+}
