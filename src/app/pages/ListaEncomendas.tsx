@@ -247,6 +247,7 @@ export default function ListaEncomendas() {
         `${p.produtoNome} (${p.quantidade}${p.observacao ? ` - ${p.observacao}` : ""})`
       ).join(", ") || "",
       "Peso Total": encomenda.produtos?.reduce((sum, p) => sum + (p.pesoTotalKg || 0), 0).toFixed(2) + " kg",
+      "Observação da Encomenda": encomenda.observacao || "",
     }));
 
     const ws = XLSX.utils.json_to_sheet(dados);
@@ -827,6 +828,11 @@ export default function ListaEncomendas() {
                                 rowSpan={produtosVisiveis.length}
                               >
                                 📅 {encomenda.clienteNome || "Cliente não informado"}
+                                {encomenda.observacao && (
+                                  <div className="mt-1 text-xs font-normal text-muted-foreground">
+                                    💬 {encomenda.observacao}
+                                  </div>
+                                )}
                               </td>
                               <td
                                 className={`${getPadding()} text-center bg-primary/5`}
@@ -853,7 +859,40 @@ export default function ListaEncomendas() {
                         </tr>
                       );
                     });
-                    
+
+                    // Encomenda gravada sem nenhum produto continua visível.
+                    // Sem esta linha o registro — e a observação — desapareciam
+                    // da tabela, porque a observação fica na linha do produto.
+                    if (produtosVisiveis.length === 0) {
+                      rows.push(
+                        <tr
+                          key={`${encomenda.id}-sem-produtos`}
+                          className="border-t bg-amber-50 dark:bg-amber-950/20"
+                        >
+                          <td className={`${getPadding()} font-bold text-primary`}>
+                            📅 {encomenda.clienteNome || "Cliente não informado"}
+                            {encomenda.observacao && (
+                              <div className="mt-1 text-xs font-normal text-muted-foreground">
+                                💬 {encomenda.observacao}
+                              </div>
+                            )}
+                          </td>
+                          <td className={`${getPadding()} text-center`}>
+                            {new Date(encomenda.data + "T00:00").toLocaleDateString("pt-BR")}
+                          </td>
+                          <td className={`${getPadding()} text-center font-medium`}>
+                            {encomenda.hora || "-"}
+                          </td>
+                          <td
+                            className={`${getPadding()} text-amber-700 dark:text-amber-300 font-medium`}
+                            colSpan={4}
+                          >
+                            ⚠️ Encomenda sem produtos — confira a mensagem original
+                          </td>
+                        </tr>
+                      );
+                    }
+
                     return rows;
                   })}
                 </tbody>
@@ -907,6 +946,11 @@ export default function ListaEncomendas() {
                       rowSpan={produtos.length}
                     >
                       {encomenda.clienteNome || "Cliente não informado"}
+                      {encomenda.observacao && (
+                        <div style={{ fontWeight: 'normal', fontSize: '9pt', marginTop: '2px' }}>
+                          💬 {encomenda.observacao}
+                        </div>
+                      )}
                     </td>
                   )}
                   <td className="p-2 border border-black">{produto.produtoNome}</td>
@@ -942,6 +986,9 @@ export default function ListaEncomendas() {
             <div className="thermal-client">
               {encomenda.clienteNome || "CLIENTE NÃO INFORMADO"}
             </div>
+            {encomenda.observacao && (
+              <div className="thermal-observacao">💬 {encomenda.observacao}</div>
+            )}
             {(encomenda.produtos || []).map((produto, pIdx) => (
               <div key={`thermal-prod-${pIdx}`} className="thermal-product-row">
                 <div className="thermal-product">{produto.produtoNome}</div>

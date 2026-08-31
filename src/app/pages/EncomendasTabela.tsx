@@ -824,7 +824,8 @@ export default function EncomendasTabela() {
           Produto: produto.produtoNome,
           Quantidade: produto.quantidade,
           "Peso Total (kg)": produto.pesoTotalKg?.toFixed(3) || "0.000",
-          Observação: produto.observacao || "",
+          "Observação do Produto": produto.observacao || "",
+          "Observação da Encomenda": encomenda.observacao || "",
         });
       });
     });
@@ -840,7 +841,8 @@ export default function EncomendasTabela() {
         { header: "Produto", key: "produto", width: 30 },
         { header: "Quantidade", key: "quantidade", width: 12 },
         { header: "Peso Total (kg)", key: "pesoTotal", width: 15 },
-        { header: "Observação", key: "observacao", width: 40 },
+        { header: "Observação do Produto", key: "observacaoProduto", width: 30 },
+        { header: "Observação da Encomenda", key: "observacaoEncomenda", width: 30 },
       ],
     });
   };
@@ -1815,6 +1817,11 @@ export default function EncomendasTabela() {
                           🕐 {encomenda.hora}
                         </span>
                       </div>
+                      {encomenda.observacao && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          💬 {encomenda.observacao}
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-2 no-print flex-wrap justify-end">
                       <Button
@@ -1908,6 +1915,11 @@ export default function EncomendasTabela() {
                                 rowSpan={produtosParaRender.length}
                               >
                                 📅 {encomenda.clienteNome}
+                                {encomenda.observacao && (
+                                  <div className="mt-1 text-xs font-normal text-muted-foreground">
+                                    💬 {encomenda.observacao}
+                                  </div>
+                                )}
                               </td>
                               <td
                                 className={`${getPadding()} text-center bg-primary/5`}
@@ -1958,7 +1970,59 @@ export default function EncomendasTabela() {
                         </tr>
                       );
                     });
-                    
+
+                    // Encomenda gravada sem nenhum produto continua visível.
+                    // Sem esta linha o registro — e a observação — desapareciam
+                    // da tabela, porque a observação fica na linha do produto.
+                    if ((encomenda.produtos || []).length === 0) {
+                      rows.push(
+                        <tr
+                          key={`${encomenda.id}-sem-produtos`}
+                          className="border-t bg-amber-50 dark:bg-amber-950/20"
+                        >
+                          <td className={`${getPadding()} font-bold text-primary`}>
+                            📅 {encomenda.clienteNome}
+                            {encomenda.observacao && (
+                              <div className="mt-1 text-xs font-normal text-muted-foreground">
+                                💬 {encomenda.observacao}
+                              </div>
+                            )}
+                          </td>
+                          <td className={`${getPadding()} text-center`}>
+                            {new Date(encomenda.data + "T00:00").toLocaleDateString("pt-BR")}
+                          </td>
+                          <td className={`${getPadding()} text-center font-medium`}>
+                            {encomenda.hora}
+                          </td>
+                          <td
+                            className={`${getPadding()} text-amber-700 dark:text-amber-300 font-medium`}
+                            colSpan={4}
+                          >
+                            ⚠️ Encomenda sem produtos — confira a mensagem original
+                          </td>
+                          <td className={`${getPadding()} text-center no-print`}>
+                            <div className="flex gap-1 justify-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => solicitarAutenticacao(encomenda)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => solicitarExclusao(encomenda)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+
                     // ============ LINHA DE EDIÇÃO INLINE ============
                     if (editandoInlineId === encomenda.id) {
                       rows.push(
@@ -2256,6 +2320,11 @@ export default function EncomendasTabela() {
                       <>
                         <td className="p-2 border border-black" rowSpan={produtosVisiveis.length} style={{ fontWeight: 'bold', verticalAlign: 'top' }}>
                           {encomenda.clienteNome}
+                          {encomenda.observacao && (
+                            <div style={{ fontWeight: 'normal', fontSize: '8pt', marginTop: '2px' }}>
+                              💬 {encomenda.observacao}
+                            </div>
+                          )}
                         </td>
                         <td className="p-2 text-center border border-black" rowSpan={produtosVisiveis.length} style={{ verticalAlign: 'top' }}>
                           {new Date(encomenda.data + "T00:00").toLocaleDateString("pt-BR")}

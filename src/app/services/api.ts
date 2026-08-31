@@ -183,6 +183,11 @@ export interface Encomenda {
   horarios?: string[]; // Novo campo para múltiplos horários
   produtos: ProdutoEncomenda[];
   quantidadeTotal: number;
+  // Observação em nível de encomenda (ex: gravada pelo Cloud Run a partir da
+  // mensagem do WhatsApp). É complementar às observações por produto, nunca
+  // substitui a linha do produto na tabela.
+  observacao?: string;
+  status?: string;
   criadoEm?: string;
   atualizadoEm?: string;
 }

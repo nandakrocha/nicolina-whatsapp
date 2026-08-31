@@ -749,17 +749,41 @@ export default function IntegracaoWhatsApp() {
         },
       );
       const json = await response.json().catch(() => null);
-      if (!response.ok || json?.ok === false) {
+
+      // O webhook só responde ok quando interpretou e gravou a mensagem
+      // inteira. HTTP 200 sozinho não significa que a encomenda foi criada.
+      const criadas = Number(json?.quantidadeEncomendasCriadas) || 0;
+      if (!response.ok || json?.ok === false || criadas < 1) {
+        const pendencias: Array<{ texto?: string }> = json?.pendencias ?? [];
+        const detalhe = pendencias
+          .map((p) => `• ${p?.texto ?? ""}`)
+          .filter((linha) => linha.trim() !== "•")
+          .join("\n");
+
         const msg =
-          json?.erro ?? json?.error ?? json?.mensagem ??
-          `HTTP ${response.status}`;
-        setModalAgendamento((prev) => prev ? { ...prev, agendando: false, erro: String(msg) } : null);
+          json?.erro ?? json?.error ?? json?.mensagem ?? `HTTP ${response.status}`;
+
+        setModalAgendamento((prev) =>
+          prev
+            ? {
+                ...prev,
+                agendando: false,
+                erro: detalhe
+                  ? `${msg}\n\nNão foi possível interpretar:\n${detalhe}`
+                  : String(msg),
+              }
+            : null,
+        );
         return;
       }
       // Sucesso confirmado
       setModalAgendamento(null);
       setConversaSelecionada(null);
-      toast.success("Encomenda agendada com sucesso.");
+      toast.success(
+        criadas === 1
+          ? "Encomenda agendada com sucesso."
+          : `${criadas} encomendas agendadas com sucesso.`,
+      );
     } catch (e: any) {
       setModalAgendamento((prev) =>
         prev ? { ...prev, agendando: false, erro: e?.message ?? "Erro de conexão" } : null,
@@ -1365,7 +1389,7 @@ export default function IntegracaoWhatsApp() {
             {modalAgendamento?.erro && (
               <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm space-y-1">
                 <p className="font-medium">Não foi possível criar a encomenda. A mensagem continua pendente.</p>
-                <p className="text-xs opacity-80">{modalAgendamento.erro}</p>
+                <p className="text-xs opacity-80 whitespace-pre-line">{modalAgendamento.erro}</p>
               </div>
             )}
           </div>
