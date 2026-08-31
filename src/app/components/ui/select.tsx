@@ -68,39 +68,43 @@ function SelectContent({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   return (
-    <SelectPrimitive.Content
-      data-slot="select-content"
-      className={cn(
-        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-96 min-w-[8rem] overflow-y-auto rounded-md border shadow-lg",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className,
-      )}
-      position={position}
-      sideOffset={4}
-      style={{
-        // iOS momentum scrolling inside the dropdown
-        WebkitOverflowScrolling: "touch",
-        // Prevent scroll from bleeding to the page when reaching top/bottom
-        overscrollBehavior: "contain",
-      }}
-      {...props}
-    >
-      <SelectPrimitive.Viewport
+    // O Portal tira a lista de dentro da tabela e dos containers com overflow,
+    // senão ela é recortada e fica atrás do próprio campo.
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        data-slot="select-content"
         className={cn(
-          "p-1",
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-96 min-w-[8rem] overflow-y-auto rounded-md border shadow-lg",
           position === "popper" &&
-            "w-full min-w-[var(--radix-select-trigger-width)]",
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          className,
         )}
+        position={position}
+        sideOffset={4}
         style={{
-          // pan-y: allows vertical swipe-to-scroll inside the list.
-          // The browser handles scroll natively — no JS interference.
-          touchAction: "pan-y",
+          // iOS momentum scrolling inside the dropdown
+          WebkitOverflowScrolling: "touch",
+          // Prevent scroll from bleeding to the page when reaching top/bottom
+          overscrollBehavior: "contain",
         }}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
+        <SelectPrimitive.Viewport
+          className={cn(
+            "p-1",
+            position === "popper" &&
+              "w-full min-w-[var(--radix-select-trigger-width)]",
+          )}
+          style={{
+            // pan-y: allows vertical swipe-to-scroll inside the list.
+            // The browser handles scroll natively — no JS interference.
+            touchAction: "pan-y",
+          }}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
   );
 }
 
