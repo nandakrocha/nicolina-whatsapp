@@ -9,6 +9,20 @@ import { migracaoAPI } from "../services/api";
 import { toast } from "sonner";
 import { limparCacheDesktop } from "../version";
 
+// "Hoje"/"amanhã" pelo relógio de São Paulo, não pelo fuso do navegador.
+// new Date().toISOString() pega o dia em UTC: entre 21h e 23h59 (horário de
+// Brasília) o UTC já virou o dia seguinte, e o Dashboard passaria a mostrar
+// "hoje" como sendo amanhã (mesmo bug corrigido na tabela de Encomendas).
+function obterDataSaoPaulo(offsetDias = 0): string {
+  const data = new Date(Date.now() + offsetDias * 86400000);
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(data);
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [encomendas, setEncomendas] = useState<Encomenda[]>([]);
@@ -96,88 +110,87 @@ export default function Dashboard() {
     });
   };
 
-  const hoje = new Date().toISOString().split("T")[0];
-  const amanha = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  const hoje = obterDataSaoPaulo(0);
+  const amanha = obterDataSaoPaulo(1);
+
+  // Categorias exibidas no resumo. "Outros" é obrigatório: qualquer produto
+  // que não caia nas 4 categorias de pão nem em Kit/Manteiga precisa
+  // aparecer aqui — nunca pode ser descartado, senão o total do Dashboard
+  // fica menor do que a soma real da tabela de Encomendas.
+  const CATEGORIAS_RESUMO = ["Pão de Sal", "Pão de Doce", "Mini Sal", "Mini Doce", "Kit", "Manteiga", "Outros"] as const;
+
+  const criarMapaCategorias = () =>
+    CATEGORIAS_RESUMO.reduce((acc, cat) => ({ ...acc, [cat]: 0 }), {} as Record<string, number>);
 
   const calcularPorCategoria = (data: string) => {
+    // Só entram no cálculo de produção as encomendas do dia que realmente
+    // têm produtos com quantidade válida (> 0). Encomendas com produtos: []
+    // (pendências vindas do WhatsApp) continuam existindo e visíveis na
+    // tabela, mas não podem contar como produção (FASE 5 da auditoria).
     const encomendasDia = encomendas.filter((e) => e.data === data);
 
-    // Categorias principais
-    const categorias = {
-      "Pão de Sal": 0,
-      "Pão de Doce": 0,
-      "Mini Sal": 0,
-      "Mini Doce": 0,
-      "Kit": 0,
-      "Manteiga": 0,
-    };
+    const categorias = criarMapaCategorias();
+    const categoriasManha = criarMapaCategorias();
+    const categoriasTarde = criarMapaCategorias();
 
-    const categoriasManha = {
-      "Pão de Sal": 0,
-      "Pão de Doce": 0,
-      "Mini Sal": 0,
-      "Mini Doce": 0,
-      "Kit": 0,
-      "Manteiga": 0,
-    };
-
-    const categoriasTarde = {
-      "Pão de Sal": 0,
-      "Pão de Doce": 0,
-      "Mini Sal": 0,
-      "Mini Doce": 0,
-      "Kit": 0,
-      "Manteiga": 0,
-    };
-
-    // Mapa de clientes por categoria
     const clientesPorCategoria: {
       [categoria: string]: { [clienteId: string]: { nome: string; quantidade: number } }
-    } = {
-      "Pão de Sal": {},
-      "Pão de Doce": {},
-      "Mini Sal": {},
-      "Mini Doce": {},
-      "Kit": {},
-      "Manteiga": {},
-    };
+    } = CATEGORIAS_RESUMO.reduce((acc, cat) => ({ ...acc, [cat]: {} }), {} as any);
+
+    // Nomes reais agrupados dentro de "Outros", para não escondermos o que
+    // está sendo somado ali (FASE 6: agrupar por produtoId, exibir por nome).
+    const produtosOutros: { [produtoKey: string]: { nome: string; quantidade: number } } = {};
 
     encomendasDia.forEach((encomenda) => {
-      // Verifica se é turno da manhã (06:00-10:59) ou tarde (11:00+)
-      const hora = encomenda.hora ? parseInt(encomenda.hora.split(':')[0]) : 0;
+      // Turno vem sempre de encomenda.hora (FASE 4), nunca inferido pelo produto.
+      const hora = encomenda.hora ? parseInt(encomenda.hora.split(':')[0], 10) : 0;
       const isManha = hora >= 6 && hora < 11;
 
       encomenda.produtos?.forEach((item) => {
+        // Regra de cálculo (FASE 3): soma sempre Number(produto.quantidade) || 0
+        // por produto dentro de produtos[]. Nunca usar quantidadeTotal da
+        // encomenda como substituto — evita duplicidade e valores fantasmas.
+        const quantidade = Number(item.quantidade) || 0;
+        if (quantidade <= 0) return;
+
         const produto = produtos.find((p) => p.id === item.produtoId);
-        if (!produto) return;
+        const nomeProduto = produto?.nome || item.produtoNome || "Produto não identificado";
 
-        let categoria = produto.categoria;
+        let categoria: string | undefined = produto?.categoria;
 
-        // Lógica especial para Kit e Manteiga
-        if (produto.nome && produto.nome.toUpperCase().startsWith("KIT")) {
+        if (nomeProduto.toUpperCase().startsWith("KIT")) {
           categoria = "Kit";
-        } else if (produto.nome && produto.nome === "Manteiga") {
+        } else if (nomeProduto === "Manteiga") {
           categoria = "Manteiga";
+        } else if (!categoria || !CATEGORIAS_RESUMO.includes(categoria as any)) {
+          // Produto cadastrado em outra categoria (Confeitaria, Padaria,
+          // Mercearia, Bebidas, À produzir) ou sem produtoId reconhecido no
+          // catálogo: NÃO descartar. Cai em "Outros" para continuar contando.
+          categoria = "Outros";
         }
 
-        // Conta categorias existentes
-        if (categoria && categorias.hasOwnProperty(categoria)) {
-          categorias[categoria] += item.quantidade;
-          if (isManha) {
-            categoriasManha[categoria] += item.quantidade;
-          } else {
-            categoriasTarde[categoria] += item.quantidade;
-          }
-
-          // Agrupa por cliente
-          if (!clientesPorCategoria[categoria][encomenda.clienteId]) {
-            clientesPorCategoria[categoria][encomenda.clienteId] = {
-              nome: encomenda.clienteNome,
-              quantidade: 0
-            };
-          }
-          clientesPorCategoria[categoria][encomenda.clienteId].quantidade += item.quantidade;
+        categorias[categoria] += quantidade;
+        if (isManha) {
+          categoriasManha[categoria] += quantidade;
+        } else {
+          categoriasTarde[categoria] += quantidade;
         }
+
+        if (categoria === "Outros") {
+          const chaveProduto = item.produtoId || nomeProduto;
+          if (!produtosOutros[chaveProduto]) {
+            produtosOutros[chaveProduto] = { nome: nomeProduto, quantidade: 0 };
+          }
+          produtosOutros[chaveProduto].quantidade += quantidade;
+        }
+
+        if (!clientesPorCategoria[categoria][encomenda.clienteId]) {
+          clientesPorCategoria[categoria][encomenda.clienteId] = {
+            nome: encomenda.clienteNome,
+            quantidade: 0
+          };
+        }
+        clientesPorCategoria[categoria][encomenda.clienteId].quantidade += quantidade;
       });
     });
 
@@ -185,7 +198,8 @@ export default function Dashboard() {
       total: categorias, 
       manha: categoriasManha, 
       tarde: categoriasTarde,
-      clientes: clientesPorCategoria 
+      clientes: clientesPorCategoria,
+      produtosOutros,
     };
   };
 
@@ -199,8 +213,15 @@ export default function Dashboard() {
   const totalPaesHoje = Object.values(categoriasHoje).reduce((acc, val) => acc + val, 0);
   const totalPaesAmanha = Object.values(categoriasAmanha).reduce((acc, val) => acc + val, 0);
 
-  const totalEncomendasHoje = encomendas.filter((e) => e.data === hoje).length;
-  const totalEncomendasAmanha = encomendas.filter((e) => e.data === amanha).length;
+  // "Total de Encomendas" conta pedidos com produção real (ao menos um
+  // produto com quantidade > 0). Encomendas com produtos: [] (pendência do
+  // WhatsApp, sem itens reconhecidos) não entram aqui — elas continuam
+  // visíveis e editáveis na tabela de Encomendas, só não inflam este total.
+  const temProducaoValida = (e: Encomenda) =>
+    (e.produtos || []).some((p) => (Number(p.quantidade) || 0) > 0);
+
+  const totalEncomendasHoje = encomendas.filter((e) => e.data === hoje && temProducaoValida(e)).length;
+  const totalEncomendasAmanha = encomendas.filter((e) => e.data === amanha && temProducaoValida(e)).length;
 
   if (carregando) {
     return (
@@ -350,6 +371,14 @@ export default function Dashboard() {
                         <td className="text-center p-2 bg-blue-50 dark:bg-blue-950/20">{dadosHoje.tarde["Manteiga"]}</td>
                         <td className="text-center p-2 font-semibold">{categoriasHoje["Manteiga"]}</td>
                       </tr>
+                      {categoriasHoje["Outros"] > 0 && (
+                        <tr className="border-b">
+                          <td className="p-2">🧾 Outros</td>
+                          <td className="text-center p-2 bg-amber-50 dark:bg-amber-950/20">{dadosHoje.manha["Outros"]}</td>
+                          <td className="text-center p-2 bg-blue-50 dark:bg-blue-950/20">{dadosHoje.tarde["Outros"]}</td>
+                          <td className="text-center p-2 font-semibold">{categoriasHoje["Outros"]}</td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -432,6 +461,14 @@ export default function Dashboard() {
                         <td className="text-center p-2 bg-blue-50 dark:bg-blue-950/20">{dadosAmanha.tarde["Manteiga"]}</td>
                         <td className="text-center p-2 font-semibold">{categoriasAmanha["Manteiga"]}</td>
                       </tr>
+                      {categoriasAmanha["Outros"] > 0 && (
+                        <tr className="border-b">
+                          <td className="p-2">🧾 Outros</td>
+                          <td className="text-center p-2 bg-amber-50 dark:bg-amber-950/20">{dadosAmanha.manha["Outros"]}</td>
+                          <td className="text-center p-2 bg-blue-50 dark:bg-blue-950/20">{dadosAmanha.tarde["Outros"]}</td>
+                          <td className="text-center p-2 font-semibold">{categoriasAmanha["Outros"]}</td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -620,6 +657,35 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* Outros: produtos que não pertencem às categorias acima
+               (Confeitaria, Padaria, Mercearia, Bebidas, À produzir, sem
+               categoria ou não encontrados no catálogo). Nada é descartado. */}
+            {categoriasHoje["Outros"] > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
+                  <h3 className="text-lg font-bold">🧾 Outros produtos</h3>
+                  <span className="text-xl font-bold text-primary">
+                    Total: {categoriasHoje["Outros"]}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {Object.values(dadosHoje.produtosOutros)
+                    .sort((a, b) => b.quantidade - a.quantidade)
+                    .map((info) => (
+                      <div
+                        key={info.nome}
+                        className="flex items-center justify-between p-2 bg-primary/5 rounded"
+                      >
+                        <span className="text-sm font-medium">{info.nome}</span>
+                        <span className="text-sm font-bold text-primary">
+                          {info.quantidade}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
             {totalPaesHoje === 0 && (
               <p className="text-center text-muted-foreground py-4">
                 Nenhuma encomenda para hoje
@@ -789,6 +855,35 @@ export default function Dashboard() {
                     .map(([clienteId, info]) => (
                       <div
                         key={clienteId}
+                        className="flex items-center justify-between p-2 bg-primary/5 rounded"
+                      >
+                        <span className="text-sm font-medium">{info.nome}</span>
+                        <span className="text-sm font-bold text-primary">
+                          {info.quantidade}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Outros: produtos que não pertencem às categorias acima
+               (Confeitaria, Padaria, Mercearia, Bebidas, À produzir, sem
+               categoria ou não encontrados no catálogo). Nada é descartado. */}
+            {categoriasAmanha["Outros"] > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
+                  <h3 className="text-lg font-bold">🧾 Outros produtos</h3>
+                  <span className="text-xl font-bold text-primary">
+                    Total: {categoriasAmanha["Outros"]}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {Object.values(dadosAmanha.produtosOutros)
+                    .sort((a, b) => b.quantidade - a.quantidade)
+                    .map((info) => (
+                      <div
+                        key={info.nome}
                         className="flex items-center justify-between p-2 bg-primary/5 rounded"
                       >
                         <span className="text-sm font-medium">{info.nome}</span>

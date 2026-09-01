@@ -74,6 +74,19 @@ import { AutenticacaoModal } from "../components/AutenticacaoModal";
 import { exportarParaExcel, imprimirPagina, estiloImpressaoPadrao } from "../utils/exportacao";
 import { authReadyPromise } from "../services/firebase";
 
+// "Hoje" pelo relógio de São Paulo, não pelo fuso do navegador. Usar
+// new Date().toISOString() pega o dia em UTC: entre 21h e 23h59 (horário de
+// Brasília) o UTC já virou o dia seguinte, e o filtro passaria a mostrar
+// "hoje" como sendo amanhã.
+function obterDataHojeSaoPaulo(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
 export default function EncomendasTabela() {
   // ✅ LOG DE VERSÃO v3.00.0 - IMPRESSÃO PROFISSIONAL A4 COMPLETA
   console.log("%c🔥 EncomendasTabela.tsx v3.00.0 CARREGADO - " + new Date().toLocaleTimeString(), 
@@ -98,12 +111,13 @@ export default function EncomendasTabela() {
   const [carregando, setCarregando] = useState(true);
 
   // Filtros
-  const [filtroDataInicio, setFiltroDataInicio] = useState(() => {
-    // Iniciar com a data atual
-    const hoje = new Date();
-    return hoje.toISOString().split('T')[0];
-  });
-  const [filtroDataFim, setFiltroDataFim] = useState("");
+  // A tabela deve abrir mostrando somente o dia de hoje. Com "Data Fim"
+  // vazia, o filtro abaixo interpretava "hoje em diante" e mostrava todas
+  // as encomendas futuras (o mês inteiro e além) — por isso os dois campos
+  // começam preenchidos com a mesma data. Nada foi removido: o usuário
+  // ainda pode limpar ou alterar essas datas para ver outro período.
+  const [filtroDataInicio, setFiltroDataInicio] = useState(() => obterDataHojeSaoPaulo());
+  const [filtroDataFim, setFiltroDataFim] = useState(() => obterDataHojeSaoPaulo());
   const [filtroCliente, setFiltroCliente] = useState("all");
   const [filtroProdutos, setFiltroProdutos] = useState<string[]>([]); // Múltiplos produtos
   const [popoverProdutosAberto, setPopoverProdutosAberto] = useState(false);
@@ -756,12 +770,13 @@ export default function EncomendasTabela() {
   const calcularQuantidadeTotal = () => {
     return encomendasFiltradas.reduce((total, enc) => {
       return total + (enc.produtos || []).reduce((sum, p) => {
+        const quantidade = Number(p.quantidade) || 0;
         // Se há filtro de produtos, soma apenas os produtos selecionados
         if (filtroProdutos.length > 0) {
-          return filtroProdutos.includes(p.produtoId) ? sum + p.quantidade : sum;
+          return filtroProdutos.includes(p.produtoId) ? sum + quantidade : sum;
         }
         // Sem filtro, soma tudo
-        return sum + p.quantidade;
+        return sum + quantidade;
       }, 0);
     }, 0);
   };
@@ -774,15 +789,16 @@ export default function EncomendasTabela() {
       return total + (enc.produtos || []).reduce((sum, p) => {
         // Normaliza o nome do produto do banco para comparação
         const nomeProdutoNormalizado = normalizarString(p.produtoNome);
+        const quantidade = Number(p.quantidade) || 0;
         
         // Verifica se os nomes correspondem (sem acentos e case-insensitive)
         if (nomeProdutoNormalizado === nomeBuscaNormalizado) {
           // Se há filtro de produtos, considera apenas se estiver no filtro
           if (filtroProdutos.length > 0) {
-            return filtroProdutos.includes(p.produtoId) ? sum + p.quantidade : sum;
+            return filtroProdutos.includes(p.produtoId) ? sum + quantidade : sum;
           }
           // Sem filtro, soma
-          return sum + p.quantidade;
+          return sum + quantidade;
         }
         return sum;
       }, 0);

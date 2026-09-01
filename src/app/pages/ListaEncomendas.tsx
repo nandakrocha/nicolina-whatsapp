@@ -233,7 +233,7 @@ export default function ListaEncomendas() {
       const produtosEncontrados = encomenda.produtos?.filter(
         (p) => p.produtoNome === nomeProduto
       ) || [];
-      return total + produtosEncontrados.reduce((sum, p) => sum + (p.quantidade || 0), 0);
+      return total + produtosEncontrados.reduce((sum, p) => sum + (Number(p.quantidade) || 0), 0);
     }, 0);
   };
 
