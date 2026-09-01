@@ -11,6 +11,7 @@ import {
   interpretarMensagem,
   montarData,
   normalizarTexto,
+  quantidadeValida,
   singularizar,
 } from '../parser.js';
 
@@ -86,6 +87,15 @@ test('extrai quantidade mesmo com separador entre número e produto', () => {
 test('converte peso em quilos', () => {
   assert.deepEqual(extrairQuantidade('500 g de'), { quantidade: 0.5, unidade: 'gramas' });
   assert.deepEqual(extrairQuantidade('2 kg'), { quantidade: 2, unidade: 'kg' });
+});
+
+test('quantidadeValida rejeita zero, negativos e valores inválidos (Regra 1)', () => {
+  for (const invalido of [0, '0', null, undefined, NaN, '', 'abc', -5, '-3']) {
+    assert.equal(quantidadeValida(invalido), false, `deveria rejeitar ${JSON.stringify(invalido)}`);
+  }
+  for (const valido of [1, 520, '520', 0.5, '5']) {
+    assert.equal(quantidadeValida(valido), true, `deveria aceitar ${JSON.stringify(valido)}`);
+  }
 });
 
 // ─── Horários ───────────────────────────────────────────────────────────────

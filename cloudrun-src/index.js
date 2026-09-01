@@ -11,6 +11,7 @@ import {
   interpretarHorario,
   interpretarMensagem,
   normalizarTexto,
+  quantidadeValida,
 } from './parser.js';
 
 import {
@@ -510,6 +511,31 @@ async function tratarMensagemRecebida(req, res) {
   }
 }
 
+/**
+ * Log de auditoria temporário: mostra, por bloco/data, o que foi lido, o que
+ * foi reconhecido e o que ficou pendente — sem expor tokens nem segredos.
+ * Serve para conferir rapidamente, pelos logs do Cloud Run, por que um
+ * produto foi ou não lançado em produtos[].
+ */
+function logValidacaoBloco(bloco) {
+  const linhasRecebidas = [
+    ...bloco.produtos.map((p) => (p.observacao ? `${p.produtoNome} (${p.observacao})` : p.produtoNome)),
+    ...bloco.pendencias.map((p) => p.texto),
+  ];
+  console.log(
+    [
+      'VALIDAÇÃO BLOCO WHATSAPP',
+      `data: ${bloco.data}`,
+      `hora: ${bloco.hora || '(não identificada)'}`,
+      `linhasRecebidas: ${JSON.stringify(linhasRecebidas)}`,
+      `produtosReconhecidos: ${bloco.produtos.map((p) => `${p.produtoNome} | ${p.quantidade}`).join(', ') || '(nenhum)'}`,
+      `linhasNaoReconhecidas: ${JSON.stringify(bloco.pendencias.map((p) => p.texto))}`,
+      `quantidadeTotal: ${somarQuantidades(bloco.produtos)}`,
+      `processamentoCompleto: ${bloco.valido}`,
+    ].join('\n'),
+  );
+}
+
 // ─── Interpretação e gravação ───────────────────────────────────────────────
 
 async function interpretarEGravar({ textoMensagem, telefoneConversa, nomeCliente }) {
@@ -526,6 +552,8 @@ async function interpretarEGravar({ textoMensagem, telefoneConversa, nomeCliente
 
   // ── Pedido com datas explícitas: um bloco por data ────────────────────────
   if (ehPedidoNovo(textoNormalizado, interpretacao.blocos.length)) {
+    interpretacao.blocos.forEach(logValidacaoBloco);
+
     if (!interpretacao.completa) {
       // Tudo ou nada: um pedido grande não pode ser gravado pela metade e
       // parecer concluído. Nada é gravado e as pendências são devolvidas.
@@ -587,6 +615,11 @@ async function tratarConversa({
   textoNormalizado, indice, conversa, conversaRef, nomeCliente, telefoneConversa, hoje,
 }) {
   const produtosDetectados = detectarProdutos(textoNormalizado, indice);
+  // Regra 1: um produto conhecido citado sem número válido ("adiciona pão de
+  // sal") não pode virar quantidade: 0 na encomenda. Só entram aqui os que
+  // têm uma quantidade numérica finita e maior que zero.
+  const produtosComQuantidadeValida = produtosDetectados.filter((p) => quantidadeValida(p?.quantidade));
+  const produtosSemQuantidade = produtosDetectados.filter((p) => !quantidadeValida(p?.quantidade));
 
   const querAlterar = contem('alterar', textoNormalizado);
   const querCancelar = contem('cancelar', textoNormalizado);
@@ -640,15 +673,29 @@ async function tratarConversa({
   }
 
   if (querCancelar) {
+    // Cancelar não depende de quantidade: só precisa identificar o produto.
     return cancelar({ encomendas, busca, hora, produtosDetectados, textoNormalizado });
   }
 
-  if (querAlterar && produtosDetectados.length) {
-    return alterarQuantidade({ encomendas, busca, hora, produtosDetectados });
+  if (querAlterar && produtosComQuantidadeValida.length) {
+    return alterarQuantidade({ encomendas, busca, hora, produtosDetectados: produtosComQuantidadeValida });
   }
 
-  if (querAdicionar && produtosDetectados.length) {
-    return adicionar({ encomendas, busca, hora, produtosDetectados });
+  if (querAdicionar && produtosComQuantidadeValida.length) {
+    return adicionar({ encomendas, busca, hora, produtosDetectados: produtosComQuantidadeValida });
+  }
+
+  // Produto conhecido citado sem uma quantidade válida ("adiciona pão de
+  // sal", "muda o pão de doce"): nunca grava quantidade 0 nem ignora em
+  // silêncio — fica sinalizado como pendência.
+  if ((querAlterar || querAdicionar) && produtosSemQuantidade.length) {
+    const pendencias = produtosSemQuantidade.map((p) => ({
+      texto: p.produtoNome,
+      motivo: 'quantidade_nao_reconhecida',
+      produtoNome: p.produtoNome,
+    }));
+    console.log('CONVERSA COM PRODUTO SEM QUANTIDADE VÁLIDA — NADA GRAVADO:', pendencias);
+    return { completa: false, criadas: [], pendencias };
   }
 
   return { completa: false, criadas: [], pendencias: [] };

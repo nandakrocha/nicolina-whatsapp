@@ -165,6 +165,16 @@ const EMBALAGENS =
 const SEPARADORES = '(?:\\s*[-–—:.x*]\\s*)*';
 
 /**
+ * Regra 1: uma quantidade só é aceitável para lançar em produtos[] quando é
+ * um número finito e maior que zero. Cobre 0, "0", null, undefined, NaN,
+ * string vazia e valores inválidos — todos são rejeitados.
+ */
+export function quantidadeValida(valor) {
+  const numero = Number(valor);
+  return Number.isFinite(numero) && numero > 0;
+}
+
+/**
  * Extrai a quantidade escrita imediatamente antes do produto.
  *
  * Aceita separadores ("650 - pães"), unidades de embalagem ("7 pacotes de
@@ -526,7 +536,7 @@ function montarBloco({ texto, recortarOriginal, inicio, fim, data, fimDaData, pr
 
   // 5. Produto reconhecido sem quantidade é pendência, nunca descarte silencioso.
   for (const produto of produtosDoBloco) {
-    if (Number(produto.quantidade) > 0) continue;
+    if (quantidadeValida(produto.quantidade)) continue;
     pendencias.push({
       texto: (linhaDe(produto.inicio)?.conteudoOriginal || produto.produtoNome).trim(),
       motivo: 'quantidade_nao_reconhecida',
@@ -534,7 +544,7 @@ function montarBloco({ texto, recortarOriginal, inicio, fim, data, fimDaData, pr
     });
   }
 
-  const produtosValidos = produtosDoBloco.filter((p) => p.produtoId && Number(p.quantidade) > 0);
+  const produtosValidos = produtosDoBloco.filter((p) => p.produtoId && quantidadeValida(p.quantidade));
 
   return {
     data,
